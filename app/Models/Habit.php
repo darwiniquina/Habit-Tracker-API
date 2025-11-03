@@ -10,4 +10,9 @@ class Habit extends Model
     use SoftDeletes;
 
     protected $guarded = [];
+
+    public function logs()
+    {
+        return $this->hasMany(HabitLog::class);
+    }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HabitController;
 use App\Http\Controllers\HabitLogController;
@@ -22,6 +23,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('habits/{id}/logs', 'store');
     });
 
+    Route::get('analytics', [AnalyticsController::class, 'index']);
 });
 
 Route::get('/user', function (Request $request) {

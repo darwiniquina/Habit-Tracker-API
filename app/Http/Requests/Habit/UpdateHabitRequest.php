@@ -23,7 +23,7 @@ class UpdateHabitRequest extends FormRequest
         return [
             'name' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string|max:255',
-            'frequency' => ['sometimes|required', Rule::in(Frequency::ALL())],
+            'frequency' => ['sometimes', 'required', Rule::in(Frequency::ALL())],
             'color' => 'nullable|string|max:255',
             'reminder_time' => 'sometimes|required|string|max:255',
         ];

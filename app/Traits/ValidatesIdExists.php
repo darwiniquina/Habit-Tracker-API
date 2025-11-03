@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Closure;
+use Symfony\Component\HttpFoundation\Response;
 
 trait ValidatesIdExists
 {
@@ -12,13 +13,17 @@ trait ValidatesIdExists
             $id = $this->route('id');
 
             if (! $id || ! is_numeric($id)) {
-                $validator->errors()->add('id', 'ID is required and must be numeric.');
-
-                return;
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'ID is required and must be numeric.',
+                ], Response::HTTP_BAD_REQUEST)->throwResponse();
             }
 
             if (! $modelClass::find($id)) {
-                $validator->errors()->add('id', 'ID not found.');
+                return response()->json([
+                    'status' => 'error',
+                    'message' => class_basename($modelClass).' not found.',
+                ], Response::HTTP_NOT_FOUND)->throwResponse();
             }
         };
     }

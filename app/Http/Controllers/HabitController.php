@@ -2,65 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Habit\CreateHabitRequest;
+use App\Http\Requests\Habit\DestroyHabitRequest;
+use App\Http\Requests\Habit\ShowHabitRequest;
+use App\Http\Requests\Habit\UpdateHabitRequest;
+use App\Http\Resources\HabitResource;
 use App\Models\Habit;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HabitController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return 'Test Index!';
-        //
+        return HabitResource::collection(Habit::all());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(CreateHabitRequest $request)
     {
-        return 'Test Create!';
+        $habit = $request->validated();
+        $habit['user_id'] = Auth::id();
+
+        $habit = Habit::create($habit);
+
+        return HabitResource::make($habit);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show(ShowHabitRequest $request)
     {
-        return 'Test Store!';
+        $habit = Habit::find($request->route('id'));
+
+        return HabitResource::make($habit);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Habit $habit)
+    public function update(UpdateHabitRequest $request, $id)
     {
-        return 'Test Show!';
+        $habit = Habit::where('user_id', Auth::id())->findOrFail($id);
+        $habit->update($request->validated());
+
+        return HabitResource::make($habit);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Habit $habit)
+    public function destroy(DestroyHabitRequest $request, $id)
     {
-        return 'Test Edit!';
-    }
+        $habit = Habit::where('user_id', Auth::id())->findOrFail($id);
+        $habit->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Habit $habit)
-    {
-        return 'Test Update!';
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Habit $habit)
-    {
-        return 'Test Destroy!';
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Habit archived successfully',
+        ]);
     }
 }
